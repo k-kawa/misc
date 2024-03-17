@@ -1,0 +1,39 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object", 
+    "properties": {
+        "audits": {
+            "type":"object",
+            "patternProperties": {
+                "^cis_.*$": {
+                    "$ref": "#/definitions/Audit"
+                }
+            }
+        }
+    },
+    "required":["audits"],
+    "definitions": {
+        "Audit": {
+            "type": "object",
+            "properties": {
+                "logging_metric_name": {
+                    "type": "string",
+                    "description": "name of google_logging_metric"
+                },
+                "logging_metric_filter": {
+                    "type": "string",
+                    "description": "filter value"
+                },
+                "alert_policy_display_name": {
+                    "type": "string",
+                    "description": "name of alert_policy"
+                },
+                "alert_policy_resource_type": {
+                    "type": "string",
+                    "description": "value of resource.type used in the filter of alert_policy.if empty, global is set"
+                }
+            },
+            "required": ["logging_metric_name", "logging_metric_filter", "alert_policy_display_name"]
+        }
+    }
+}

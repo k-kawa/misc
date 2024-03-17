@@ -1,0 +1,72 @@
+# yaml-language-server : $schema=./audit_config.schema.json
+
+audits:
+  cis_v200_2_4:
+    alert_policy_display_name: Audit Project Ownership Changes
+    logging_metric_name: audit-project-ownership-changes
+    logging_metric_filter: |
+      (protoPayload.serviceName="cloudresourcemanager.googleapis.com")
+      AND (ProjectOwnership OR projectOwnerInvitee)
+      OR (protoPayload.serviceData.policyDelta.bindingDeltas.action="REMOVE" AND protoPayload.serviceData.policyDelta.bindingDeltas.role="roles/owner") 
+      OR (protoPayload.serviceData.policyDelta.bindingDeltas.action="ADD" AND protoPayload.serviceData.policyDelta.bindingDeltas.role="roles/owner")
+
+  cis_v200_2_5:
+    alert_policy_display_name: Audit Configuration Changes
+    logging_metric_name: audit-configurtion-changes
+    logging_metric_filter: |
+      protoPayload.methodName="SetIamPolicy" AND
+      protoPayload.serviceData.policyDelta.auditConfigDeltas:*
+
+  cis_v200_2_6: 
+    alert_policy_display_name: Audit Custom Role Changes
+    logging_metric_name: audit-custom-role-changes
+    logging_metric_filter: | 
+      resource.type="iam_role"
+      AND (
+      protoPayload.methodName = "google.iam.admin.v1.CreateRole"
+      OR protoPayload.methodName="google.iam.admin.v1.DeleteRole"
+      OR protoPayload.methodName="google.iam.admin.v1.UpdateRole")
+
+  cis_v200_2_7:
+    alert_policy_display_name: Audit VPC Network Firewall Rule Changes
+    logging_metric_name: audit-vpc-network-firewall-rule-changes
+    logging_metric_filter: |
+      resource.type="gce_firewall_rule"
+      AND (
+      protoPayload.methodName:"compute.firewalls.patch"
+      OR protoPayload.methodName:"compute.firewalls.insert"
+      OR protoPayload.methodName:"compute.firewalls.delete")
+
+  cis_v200_2_8:
+    alert_policy_display_name: Audit VPC Network Route Changes 
+    logging_metric_name: audit-vpc-network-route-changes
+    logging_metric_filter: | 
+      resource.type="gce_route"
+      AND (protoPayload.methodName:"compute.routes.delete"
+      OR protoPayload.methodName:"compute.routes.insert")
+
+  cis_v200_2_9:
+    alert_policy_display_name: Audit VPC Network Changes
+    logging_metric_name: audit-vpc-network-changes
+    logging_metric_filter: |
+      resource.type=gce_network
+      AND (
+      protoPayload.methodName="beta.compute.networks.insert"
+      OR protoPayload.methodName="beta.compute.networks.patch"
+      OR protoPayload.methodName="v1.compute.networks.delete"
+      OR protoPayload.methodName="v1.compute.networks.removePeering"
+      OR protoPayload.methodName="v1.compute.networks.addPeering")
+
+  cis_v200_2_10:
+    alert_policy_display_name: Audit Cloud Storage IAM Permission Changes
+    alert_policy_resource_type: gcs_bucket
+    logging_metric_name: audit-cloud-storage-iam-permission-changes
+    logging_metric_filter: |
+      resource.type="gcs_bucket"
+      AND protoPayload.methodName="storage.setIamPermissions"
+
+  cis_v200_2_11:
+    alert_policy_display_name: Audit SQL Instance Configuration Changes
+    logging_metric_name: audit-sql-instance-configuration-changes
+    logging_metric_filter: |
+      protoPayload.methodName="cloudsql.instances.update"
